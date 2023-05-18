@@ -1,6 +1,7 @@
 package other.service;
 
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.entity.Seat;
 import edu.fudan.common.util.Response;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +50,7 @@ public interface OrderOtherService {
 
     Response queryAlreadySoldOrders(Date travelDate, String trainNumber, HttpHeaders headers);
 
-    Response checkSecurityAboutOrder(Date checkDate, String accountId, HttpHeaders headers);
+    Response checkSecurityAboutOrder(ErrorSceneFlag errorSceneFlag, Date checkDate, String accountId, HttpHeaders headers);
 
     void initOrder(Order order, HttpHeaders headers);
 }

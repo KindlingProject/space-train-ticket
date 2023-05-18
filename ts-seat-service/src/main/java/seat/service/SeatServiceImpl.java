@@ -1,5 +1,7 @@
 package seat.service;
 
+import edu.fudan.common.constants.ServiceKey;
+import edu.fudan.common.util.ErrorUtil;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,7 @@ public class SeatServiceImpl implements SeatService {
             HttpEntity requestEntity = new HttpEntity(null);
             //Call the microservice to query for residual Ticket information: the set of the Ticket sold for the specified seat type
             requestEntity = new HttpEntity(seatRequest, null);
-            String order_service_url=getServiceUrl("ts-order-service");
+            String order_service_url = getServiceUrl("ts-order-service");
             re3 = restTemplate.exchange(
                     order_service_url + "/api/v1/orderservice/order/tickets",
                     HttpMethod.POST,
@@ -69,7 +71,7 @@ public class SeatServiceImpl implements SeatService {
             SeatServiceImpl.LOGGER.info("[distributeSeat][TrainNumber start][Other Capital Except D and G]");
             //Call the microservice to query for residual Ticket information: the set of the Ticket sold for the specified seat type
             HttpEntity requestEntity = new HttpEntity(seatRequest, null);
-            String order_other_service_url=getServiceUrl("ts-order-other-service");
+            String order_other_service_url = getServiceUrl("ts-order-other-service");
             re3 = restTemplate.exchange(
                     order_other_service_url + "/api/v1/orderOtherService/orderOther/tickets",
                     HttpMethod.POST,
@@ -94,7 +96,7 @@ public class SeatServiceImpl implements SeatService {
         int range = seatTotalNum;
         int seat = rand.nextInt(range) + 1;
 
-        if(leftTicketInfo != null) {
+        if (leftTicketInfo != null) {
             Set<Ticket> soldTickets = leftTicketInfo.getSoldTickets();
             //Give priority to tickets already sold
             for (Ticket soldTicket : soldTickets) {
@@ -140,7 +142,7 @@ public class SeatServiceImpl implements SeatService {
 
             //Call the micro service to query all the station information for the trains
             HttpEntity requestEntity = new HttpEntity(seatRequest, null);
-            String order_service_url=getServiceUrl("ts-order-service");
+            String order_service_url = getServiceUrl("ts-order-service");
             re3 = restTemplate.exchange(
                     order_service_url + "/api/v1/orderservice/order/tickets",
                     HttpMethod.POST,
@@ -156,7 +158,7 @@ public class SeatServiceImpl implements SeatService {
             HttpEntity requestEntity = new HttpEntity(null);
             //Call the micro service to query for residual Ticket information: the set of the Ticket sold for the specified seat type
             requestEntity = new HttpEntity(seatRequest, null);
-            String order_other_service_url=getServiceUrl("ts-order-other-service");
+            String order_other_service_url = getServiceUrl("ts-order-other-service");
             re3 = restTemplate.exchange(
                     order_other_service_url + "/api/v1/orderOtherService/orderOther/tickets",
                     HttpMethod.POST,
@@ -187,7 +189,7 @@ public class SeatServiceImpl implements SeatService {
         }
         //Count the unsold tickets
 
-        double direstPart = getDirectProportion(headers);
+        double direstPart = getDirectProportion(headers, seatRequest.getErrorSceneFlag());
 
         if (stationList.get(0).equals(seatRequest.getStartStation()) &&
                 stationList.get(stationList.size() - 1).equals(seatRequest.getDestStation())) {
@@ -199,22 +201,45 @@ public class SeatServiceImpl implements SeatService {
         int unusedNum = (int) (seatTotalNum * direstPart) - solidTicketSize;
         numOfLeftTicket += unusedNum;
 
+        ErrorUtil.errorScene(seatRequest.getErrorSceneFlag(), ServiceKey.TS_SEAT_SERVICE);
+
         return new Response<>(1, "Get Left Ticket of Internal Success", numOfLeftTicket);
     }
 
-    private double getDirectProportion(HttpHeaders headers) {
+    @Override
+    public Response getLeftTicketOfInterval2(ErrorSceneFlag errorSceneFlag, HttpHeaders headers) {
+        getDirectProportion2(headers, errorSceneFlag);
+        String result = ErrorUtil.errorScene(errorSceneFlag, ServiceKey.TS_SEAT_SERVICE);
+        return new Response<>(1, "Get Left Ticket of Internal Success", result);
+    }
+
+
+    private double getDirectProportion(HttpHeaders headers, ErrorSceneFlag errorSceneFlag) {
 
         String configName = "DirectTicketAllocationProportion";
-        HttpEntity requestEntity = new HttpEntity(null);
+        HttpEntity requestEntity = new HttpEntity(errorSceneFlag, null);
         String config_service_url = getServiceUrl("ts-config-service");
         ResponseEntity<Response<Config>> re = restTemplate.exchange(
                 config_service_url + "/api/v1/configservice/configs/" + configName,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Config>>() {
                 });
         Response<Config> configValue = re.getBody();
         SeatServiceImpl.LOGGER.info("[getDirectProportion][Configs is : {}]", configValue.getData().toString());
         return Double.parseDouble(configValue.getData().getValue());
+    }
+
+    private void getDirectProportion2(HttpHeaders headers, ErrorSceneFlag errorSceneFlag) {
+
+        HttpEntity requestEntity = new HttpEntity(errorSceneFlag, null);
+        String config_service_url = getServiceUrl("ts-config-service");
+        ResponseEntity<Response<String>> re = restTemplate.exchange(
+                config_service_url + "/api/v1/configservice/configs/scene",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<Response<String>>() {
+                });
+
     }
 }

@@ -1,5 +1,6 @@
 package other.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.entity.Seat;
 import edu.fudan.common.util.StringUtils;
 import org.slf4j.Logger;
@@ -112,11 +113,12 @@ public class OrderOtherController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping(path = "/orderOther/security/{checkDate}/{accountId}")
+    @PostMapping(path = "/orderOther/security/{checkDate}/{accountId}")
     public HttpEntity securityInfoCheck(@PathVariable String checkDate, @PathVariable String accountId,
+                                        @RequestBody ErrorSceneFlag errorSceneFlag,
                                         @RequestHeader HttpHeaders headers) {
-        OrderOtherController.LOGGER.info("[checkSecurityAboutOrder][Security Info Get][CheckDate:{} , AccountId:{}]",checkDate,accountId);
-        return ok(orderService.checkSecurityAboutOrder(StringUtils.String2Date(checkDate), accountId, headers));
+        OrderOtherController.LOGGER.info("[checkSecurityAboutOrder][Security Info Get][CheckDate:{} , AccountId:{}]", checkDate, accountId);
+        return ok(orderService.checkSecurityAboutOrder(errorSceneFlag, StringUtils.String2Date(checkDate), accountId, headers));
     }
 
     @CrossOrigin(origins = "*")

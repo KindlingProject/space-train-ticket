@@ -1,5 +1,8 @@
 package price.service;
 
+import edu.fudan.common.constants.ServiceKey;
+import edu.fudan.common.entity.ErrorSceneFlag;
+import edu.fudan.common.util.ErrorUtil;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +21,7 @@ import java.util.*;
 @Service
 public class PriceServiceImpl implements PriceService {
 
-    @Autowired(required=true)
+    @Autowired(required = true)
     private PriceConfigRepository priceConfigRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PriceServiceImpl.class);
@@ -44,7 +47,7 @@ public class PriceServiceImpl implements PriceService {
             if (!op.isPresent()) {
                 priceConfig = new PriceConfig();
                 priceConfig.setId(createAndModifyPriceConfig.getId());
-            }else{
+            } else {
                 priceConfig = op.get();
             }
             priceConfig.setBasicPriceRate(createAndModifyPriceConfig.getBasicPriceRate());
@@ -60,20 +63,22 @@ public class PriceServiceImpl implements PriceService {
     public PriceConfig findById(String id, HttpHeaders headers) {
         PriceServiceImpl.LOGGER.info("[findById][ID: {}]", id);
         Optional<PriceConfig> op = priceConfigRepository.findById(UUID.fromString(id).toString());
-        if(op.isPresent()){
+        if (op.isPresent()) {
             return op.get();
         }
         return null;
     }
 
     @Override
-    public Response findByRouteIdAndTrainType(String routeId, String trainType, HttpHeaders headers) {
+    public Response findByRouteIdAndTrainType(ErrorSceneFlag errorSceneFlag, String routeId, String trainType, HttpHeaders headers) {
         PriceServiceImpl.LOGGER.info("[findByRouteIdAndTrainType][Route: {} , Train Type: {}]", routeId, trainType);
         PriceConfig priceConfig = priceConfigRepository.findByRouteIdAndTrainType(routeId, trainType);
         //PriceServiceImpl.LOGGER.info("[findByRouteIdAndTrainType]");
 
+        //自定义故障场景
+        ErrorUtil.errorScene(errorSceneFlag, ServiceKey.TS_PRICE_SERVICE);
         if (priceConfig == null) {
-            PriceServiceImpl.LOGGER.warn("[findByRouteIdAndTrainType][Find by route and train type warn][PricrConfig not found][RouteId: {}, TrainType: {}]",routeId,trainType);
+            PriceServiceImpl.LOGGER.warn("[findByRouteIdAndTrainType][Find by route and train type warn][PricrConfig not found][RouteId: {}, TrainType: {}]", routeId, trainType);
             return new Response<>(0, noThatConfig, null);
         } else {
             return new Response<>(1, "Success", priceConfig);
@@ -81,24 +86,24 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public Response findByRouteIdsAndTrainTypes(List<String> ridsAndTts, HttpHeaders headers){
+    public Response findByRouteIdsAndTrainTypes(List<String> ridsAndTts, HttpHeaders headers) {
         List<String> routeIds = new ArrayList<>();
         List<String> trainTypes = new ArrayList<>();
-        for(String rts: ridsAndTts){
-            List<String> r_t  = Arrays.asList(rts.split(":"));
+        for (String rts : ridsAndTts) {
+            List<String> r_t = Arrays.asList(rts.split(":"));
             routeIds.add(r_t.get(0));
             trainTypes.add(r_t.get(1));
         }
         List<PriceConfig> pcs = priceConfigRepository.findByRouteIdsAndTrainTypes(routeIds, trainTypes);
         Map<String, PriceConfig> pcMap = new HashMap<>();
-        for(PriceConfig pc: pcs){
+        for (PriceConfig pc : pcs) {
             String key = pc.getRouteId() + ":" + pc.getTrainType();
-            if(ridsAndTts.contains(key)){
+            if (ridsAndTts.contains(key)) {
                 pcMap.put(key, pc);
             }
         }
         if (pcMap == null) {
-            PriceServiceImpl.LOGGER.warn("[findByRouteIdsAndTrainTypes][Find by routes and train types warn][PricrConfig not found][RouteIds: {}, TrainTypes: {}]",routeIds,trainTypes);
+            PriceServiceImpl.LOGGER.warn("[findByRouteIdsAndTrainTypes][Find by routes and train types warn][PricrConfig not found][RouteIds: {}, TrainTypes: {}]", routeIds, trainTypes);
             return new Response<>(0, noThatConfig, null);
         } else {
             return new Response<>(1, "Success", pcMap);
@@ -114,7 +119,7 @@ public class PriceServiceImpl implements PriceService {
         }
 
         if (!list.isEmpty()) {
-            PriceServiceImpl.LOGGER.warn("[findAllPriceConfig][Find all price config warn][{}]","No Content");
+            PriceServiceImpl.LOGGER.warn("[findAllPriceConfig][Find all price config warn][{}]", "No Content");
             return new Response<>(1, "Success", list);
         } else {
             return new Response<>(0, "No price config", null);
@@ -126,7 +131,7 @@ public class PriceServiceImpl implements PriceService {
     public Response deletePriceConfig(String pcId, HttpHeaders headers) {
         Optional<PriceConfig> op = priceConfigRepository.findById(pcId);
         if (!op.isPresent()) {
-            PriceServiceImpl.LOGGER.error("[deletePriceConfig][Delete price config error][Price config not found][PriceConfigId: {}]",pcId);
+            PriceServiceImpl.LOGGER.error("[deletePriceConfig][Delete price config error][Price config not found][PriceConfigId: {}]", pcId);
             return new Response<>(0, noThatConfig, null);
         } else {
             PriceConfig pc = op.get();
@@ -139,7 +144,7 @@ public class PriceServiceImpl implements PriceService {
     public Response updatePriceConfig(PriceConfig c, HttpHeaders headers) {
         Optional<PriceConfig> op = priceConfigRepository.findById(c.getId());
         if (!op.isPresent()) {
-            PriceServiceImpl.LOGGER.error("[updatePriceConfig][Update price config error][Price config not found][PriceConfigId: {}]",c.getId());
+            PriceServiceImpl.LOGGER.error("[updatePriceConfig][Update price config error][Price config not found][PriceConfigId: {}]", c.getId());
             return new Response<>(0, noThatConfig, null);
         } else {
             PriceConfig priceConfig = op.get();

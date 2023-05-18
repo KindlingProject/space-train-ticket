@@ -58,6 +58,8 @@ public class Order {
 
     private String differenceMoney;
 
+    private ErrorSceneFlag errorSceneFlag;
+
     public Order(){
         boughtDate = StringUtils.Date2String(new Date(System.currentTimeMillis()));
         travelDate = StringUtils.Date2String(new Date(123456789));

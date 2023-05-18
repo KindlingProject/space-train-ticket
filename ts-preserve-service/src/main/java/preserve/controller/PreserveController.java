@@ -33,6 +33,9 @@ public class PreserveController {
     public HttpEntity preserve(@RequestBody OrderTicketsInfo oti,
                                @RequestHeader HttpHeaders headers) {
         PreserveController.LOGGER.info("[preserve][Preserve Account order][from {} to {} at {}]", oti.getFrom(), oti.getTo(), oti.getDate());
+        if (null == oti.getErrorSceneFlag()) {
+            oti.setErrorSceneFlag(new ErrorSceneFlag());
+        }
         return ok(preserveService.preserve(oti, headers));
     }
 

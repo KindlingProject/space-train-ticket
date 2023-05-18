@@ -21,6 +21,8 @@ public class TripAllDetailInfo {
 
     private String to;
 
+    private ErrorSceneFlag errorSceneFlag;
+
     public TripAllDetailInfo() {
         //Default Constructor
     }

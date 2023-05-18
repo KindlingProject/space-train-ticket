@@ -1,5 +1,6 @@
 package route.service;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import org.springframework.http.HttpHeaders;
 import route.entity.*;
@@ -37,7 +38,7 @@ public interface RouteService {
      * @param headers headers
      * @return Response
      */
-    Response getRouteById(String routeId, HttpHeaders headers);
+    Response getRouteById(ErrorSceneFlag errorSceneFlag, String routeId, HttpHeaders headers);
 
     /**
      * get route by ids

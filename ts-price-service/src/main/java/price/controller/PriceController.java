@@ -1,5 +1,6 @@
 package price.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,12 @@ public class PriceController {
         return "Welcome to [ Price Service ] !";
     }
 
-    @GetMapping(value = "/prices/{routeId}/{trainType}")
+    @PostMapping(value = "/prices/{routeId}/{trainType}")
     public HttpEntity query(@PathVariable String routeId, @PathVariable String trainType,
+                            @RequestBody ErrorSceneFlag errorSceneFlag,
                             @RequestHeader HttpHeaders headers) {
         PriceController.LOGGER.info("[findByRouteIdAndTrainType][Query price][RouteId: {}, TrainType: {}]",routeId,trainType);
-        return ok(service.findByRouteIdAndTrainType(routeId, trainType, headers));
+        return ok(service.findByRouteIdAndTrainType(errorSceneFlag, routeId, trainType, headers));
     }
 
     @PostMapping(value = "/prices/byRouteIdsAndTrainTypes")

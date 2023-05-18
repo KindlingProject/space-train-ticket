@@ -1,5 +1,6 @@
 package route.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +43,12 @@ public class RouteController {
         return ok(routeService.deleteRoute(routeId, headers));
     }
 
-    @GetMapping(path = "/routes/{routeId}")
-    public HttpEntity queryById(@PathVariable String routeId, @RequestHeader HttpHeaders headers) {
+    @PostMapping(path = "/routes/{routeId}")
+    public HttpEntity queryById(@PathVariable String routeId,
+                                @RequestBody ErrorSceneFlag errorSceneFlag,
+                                @RequestHeader HttpHeaders headers) {
         RouteController.LOGGER.info("[getRouteById][Query route by id][RouteId: {}]", routeId);
-        return ok(routeService.getRouteById(routeId, headers));
+        return ok(routeService.getRouteById(errorSceneFlag, routeId, headers));
     }
 
     @PostMapping(path = "/routes/byIds")

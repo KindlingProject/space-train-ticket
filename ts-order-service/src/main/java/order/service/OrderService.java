@@ -1,5 +1,6 @@
 package order.service;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.entity.Seat;
 import edu.fudan.common.util.Response;
 import order.entity.*;
@@ -15,7 +16,7 @@ public interface OrderService {
 
     Response findOrderById(String id, HttpHeaders headers);
 
-    Response create(Order newOrder, HttpHeaders headers);
+    Response create(Order newOrder, HttpHeaders headers, ErrorSceneFlag errorSceneFlag);
 
     Response saveChanges(Order order, HttpHeaders headers);
 

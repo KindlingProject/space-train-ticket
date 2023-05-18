@@ -1,6 +1,7 @@
 package config.service;
 
 import config.entity.Config;
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import org.springframework.http.HttpHeaders;
 
@@ -35,7 +36,10 @@ public interface ConfigService {
      * @param headers headers
      * @return Response
      */
-    Response query(String name, HttpHeaders headers);
+    Response query(ErrorSceneFlag errorSceneFlag, String name, HttpHeaders headers);
+
+
+    Response query2(ErrorSceneFlag errorSceneFlag);
 
     /**
      * delete by name and headers

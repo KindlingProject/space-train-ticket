@@ -1,6 +1,7 @@
 package travel.entity;
 
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.StringUtils;
 import lombok.Data;
 
@@ -21,6 +22,8 @@ public class Travel {
     private String endPlace;
 
     private String departureTime;
+
+    private ErrorSceneFlag errorSceneFlag;
 
     public Travel(){
         //Default Constructor

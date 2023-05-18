@@ -19,6 +19,8 @@ public class TravelResult {
 
     private Map<String,String> prices;
 
+    private String sceneResult;
+
     public TravelResult(){
         //Default Constructor
     }

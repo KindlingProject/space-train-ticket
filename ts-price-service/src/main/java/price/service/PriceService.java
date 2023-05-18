@@ -1,5 +1,6 @@
 package price.service;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import org.springframework.http.HttpHeaders;
 
@@ -20,7 +21,7 @@ public interface PriceService {
 
     Response findByRouteIdsAndTrainTypes(List<String> ridsAndTts, HttpHeaders headers);
 
-    Response findByRouteIdAndTrainType(String routeId, String trainType, HttpHeaders headers);
+    Response findByRouteIdAndTrainType(ErrorSceneFlag errorSceneFlag, String routeId, String trainType, HttpHeaders headers);
 
     Response findAllPriceConfig(HttpHeaders headers);
 

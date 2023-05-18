@@ -1,5 +1,8 @@
 package route.service;
 
+import edu.fudan.common.constants.ServiceKey;
+import edu.fudan.common.entity.ErrorSceneFlag;
+import edu.fudan.common.util.ErrorUtil;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,7 @@ public class RouteServiceImpl implements RouteService {
         List<String> stationList = new ArrayList<>();
         List<Integer> distanceList = new ArrayList<>();
         if (stations.length != distances.length) {
-            RouteServiceImpl.LOGGER.error("[createAndModify][Create and modify error][Station number not equal to distance number][RouteId: {}]",info.getId());
+            RouteServiceImpl.LOGGER.error("[createAndModify][Create and modify error][Station number not equal to distance number][RouteId: {}]", info.getId());
             return new Response<>(0, "Station Number Not Equal To Distance Number", null);
         }
         for (int i = 0; i < stations.length; i++) {
@@ -48,9 +51,9 @@ public class RouteServiceImpl implements RouteService {
         Route route = new Route();
         if (info.getId() == null || info.getId().length() < maxIdArrayLen) {
             route.setId(UUID.randomUUID().toString());
-        }else{
+        } else {
             Optional<Route> routeOld = routeRepository.findById(info.getId());
-            if(routeOld.isPresent()) {
+            if (routeOld.isPresent()) {
                 route = routeOld.get();
             } else {
                 route.setId(info.getId());
@@ -72,16 +75,18 @@ public class RouteServiceImpl implements RouteService {
         if (!route.isPresent()) {
             return new Response<>(1, "Delete Success", routeId);
         } else {
-            RouteServiceImpl.LOGGER.error("[deleteRoute][Delete error][Route not found][RouteId: {}]",routeId);
+            RouteServiceImpl.LOGGER.error("[deleteRoute][Delete error][Route not found][RouteId: {}]", routeId);
             return new Response<>(0, "Delete failed, Reason unKnown with this routeId", routeId);
         }
     }
 
     @Override
-    public Response getRouteById(String routeId, HttpHeaders headers) {
+    public Response getRouteById(ErrorSceneFlag errorSceneFlag, String routeId, HttpHeaders headers) {
         Optional<Route> route = routeRepository.findById(routeId);
+        //自定义故障场景
+        ErrorUtil.errorScene(errorSceneFlag, ServiceKey.TS_ROUTE_SERVICE);
         if (!route.isPresent()) {
-            RouteServiceImpl.LOGGER.error("[getRouteById][Find route error][Route not found][RouteId: {}]",routeId);
+            RouteServiceImpl.LOGGER.error("[getRouteById][Find route error][Route not found][RouteId: {}]", routeId);
             return new Response<>(0, "No content with the routeId", null);
         } else {
             return new Response<>(1, success, route);
@@ -93,7 +98,7 @@ public class RouteServiceImpl implements RouteService {
     public Response getRouteByIds(List<String> routeIds, HttpHeaders headers) {
         List<Route> routes = routeRepository.findByIds(routeIds);
         if (routes == null || routes.isEmpty()) {
-            RouteServiceImpl.LOGGER.error("[getRouteById][Find route error][Route not found][RouteIds: {}]",routeIds);
+            RouteServiceImpl.LOGGER.error("[getRouteById][Find route error][Route not found][RouteIds: {}]", routeIds);
             return new Response<>(0, "No content with the routeIds", null);
         } else {
             return new Response<>(1, success, routes);
@@ -115,7 +120,7 @@ public class RouteServiceImpl implements RouteService {
         if (!resultList.isEmpty()) {
             return new Response<>(1, success, resultList);
         } else {
-            RouteServiceImpl.LOGGER.warn("[getRouteByStartAndEnd][Find by start and terminal warn][Routes not found][startId: {},terminalId: {}]",startId,terminalId);
+            RouteServiceImpl.LOGGER.warn("[getRouteByStartAndEnd][Find by start and terminal warn][Routes not found][startId: {},terminalId: {}]", startId, terminalId);
             return new Response<>(0, "No routes with the startId and terminalId", null);
         }
     }
@@ -126,7 +131,7 @@ public class RouteServiceImpl implements RouteService {
         if (routes != null && !routes.isEmpty()) {
             return new Response<>(1, success, routes);
         } else {
-            RouteServiceImpl.LOGGER.warn("[getAllRoutes][Find all routes warn][{}]","No Content");
+            RouteServiceImpl.LOGGER.warn("[getAllRoutes][Find all routes warn][{}]", "No Content");
             return new Response<>(0, "No Content", null);
         }
     }

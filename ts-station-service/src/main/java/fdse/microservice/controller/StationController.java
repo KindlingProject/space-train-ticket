@@ -1,5 +1,6 @@
 package fdse.microservice.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import fdse.microservice.entity.*;
 import fdse.microservice.service.StationService;
@@ -56,12 +57,13 @@ public class StationController {
 
 
     // according to station name ---> query station id
-    @GetMapping(value = "/stations/id/{stationNameForId}")
-    public HttpEntity queryForStationId(@PathVariable(value = "stationNameForId")
-                                                String stationName, @RequestHeader HttpHeaders headers) {
+    @PostMapping(value = "/stations/id/{stationNameForId}")
+    public HttpEntity queryForStationId(@PathVariable(value = "stationNameForId") String stationName,
+                                        @RequestBody ErrorSceneFlag errorSceneFlag,
+                                        @RequestHeader HttpHeaders headers) {
         // string
         StationController.LOGGER.info("[queryForId][Query for station id][StationName: {}]",stationName);
-        return ok(stationService.queryForId(stationName, headers));
+        return ok(stationService.queryForId(errorSceneFlag, stationName, headers));
     }
 
     // according to station name list --->  query all station ids

@@ -2,6 +2,9 @@ package config.service;
 
 import config.entity.Config;
 import config.repository.ConfigRepository;
+import edu.fudan.common.constants.ServiceKey;
+import edu.fudan.common.entity.ErrorSceneFlag;
+import edu.fudan.common.util.ErrorUtil;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +59,11 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @Override
-    public Response query(String name, HttpHeaders headers) {
+    public Response query(ErrorSceneFlag errorSceneFlag, String name, HttpHeaders headers) {
         Config config = repository.findByName(name);
+
+        ErrorUtil.errorScene(errorSceneFlag, ServiceKey.TS_CONFIG_SERVICE);
+
         if (config == null) {
             logger.warn("[query][Config does not exist][name: {}, message: {}]", name, "No content");
             return new Response<>(0, "No content", null);
@@ -65,6 +71,16 @@ public class ConfigServiceImpl implements ConfigService {
             logger.info("[query][Query config success][config name: {}]", name);
             return new Response<>(1, "Success", config);
         }
+    }
+
+    @Override
+    public Response query2(ErrorSceneFlag errorSceneFlag) {
+
+        //
+
+        String result =  ErrorUtil.errorScene(errorSceneFlag, ServiceKey.TS_CONFIG_SERVICE);
+
+        return new Response<>(0, "No content", result);
     }
 
     @Override

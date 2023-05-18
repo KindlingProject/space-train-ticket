@@ -53,6 +53,8 @@ public class OrderTicketsInfo {
 
     private boolean isWithin;
 
+    private ErrorSceneFlag errorSceneFlag;
+
     public String getFrom() {
         return StringUtils.String2Lower(this.from);
     }

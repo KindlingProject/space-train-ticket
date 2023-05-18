@@ -22,4 +22,5 @@ public class TripAllDetail {
         this.trip = trip;
     }
 
+    private String sceneResult;
 }

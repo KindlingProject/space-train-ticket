@@ -40,6 +40,8 @@ public class Seat {
 
     private List<String> stations;
 
+    private ErrorSceneFlag errorSceneFlag;
+
     public Seat(){
         //Default Constructor
         this.travelDate = "";

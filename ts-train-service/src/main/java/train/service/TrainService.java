@@ -1,5 +1,6 @@
 package train.service;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import org.springframework.http.HttpHeaders;
 import train.entity.TrainType;
 
@@ -11,7 +12,11 @@ public interface TrainService {
 
     TrainType retrieve(String id,HttpHeaders headers);
 
-    TrainType retrieveByName(String name,HttpHeaders headers);
+    TrainType retrieveByName(ErrorSceneFlag errorSceneFlag, String name, HttpHeaders headers);
+
+
+    String retrieveByName2(ErrorSceneFlag errorSceneFlag, HttpHeaders headers);
+
 
     List<TrainType> retrieveByNames(List<String> name,HttpHeaders headers);
 

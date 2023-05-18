@@ -1,5 +1,6 @@
 package fdse.microservice.service;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import fdse.microservice.entity.*;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +19,7 @@ public interface StationService {
 
     Response query(HttpHeaders headers);
 
-    Response queryForId(String stationName, HttpHeaders headers);
+    Response queryForId(ErrorSceneFlag errorSceneFlag, String stationName, HttpHeaders headers);
 
     Response queryForIdBatch(List<String> nameList, HttpHeaders headers);
 

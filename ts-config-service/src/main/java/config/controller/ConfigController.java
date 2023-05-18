@@ -2,6 +2,7 @@ package config.controller;
 
 import config.entity.Config;
 import config.service.ConfigService;
+import edu.fudan.common.entity.ErrorSceneFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 /**
- * @author  Chenjie Xu
+ * @author Chenjie Xu
  * @date 2017/5/11.
  */
 @RestController
@@ -62,12 +63,19 @@ public class ConfigController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping(value = "/configs/{configName}")
-    public HttpEntity retrieve(@PathVariable String configName, @RequestHeader HttpHeaders headers) {
+    @PostMapping(value = "/configs/{configName}")
+    public HttpEntity retrieve(@PathVariable String configName, @RequestHeader HttpHeaders headers,
+                               @RequestBody ErrorSceneFlag errorSceneFlag) {
         logger.info("[retrieve][Retrieve config][configName: {}]", configName);
-        return ok(configService.query(configName, headers));
+        return ok(configService.query(errorSceneFlag, configName, headers));
     }
 
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/configs/scene")
+    public HttpEntity retrieve2(@RequestHeader HttpHeaders headers,
+                                @RequestBody ErrorSceneFlag errorSceneFlag) {
+        return ok(configService.query2(errorSceneFlag));
+    }
 
 
 }

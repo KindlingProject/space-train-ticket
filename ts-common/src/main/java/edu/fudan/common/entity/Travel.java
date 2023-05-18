@@ -19,6 +19,8 @@ public class Travel {
 
     private String departureTime;
 
+    private ErrorSceneFlag errorSceneFlag;
+
     public Travel(){
         //Default Constructor
     }

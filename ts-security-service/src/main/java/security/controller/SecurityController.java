@@ -1,5 +1,7 @@
 package security.controller;
 
+import com.alibaba.fastjson.JSON;
+import edu.fudan.common.entity.ErrorSceneFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +59,12 @@ public class SecurityController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping(path = "/securityConfigs/{accountId}")
-    public HttpEntity check(@PathVariable String accountId, @RequestHeader HttpHeaders headers) {
-        SecurityController.LOGGER.info("[check][Check Security][Check Account Id: {}]", accountId);
-        return ok(securityService.check(accountId, headers));
+    @PostMapping(path = "/securityConfigs/{accountId}")
+    public HttpEntity check(@PathVariable String accountId,
+                            @RequestBody ErrorSceneFlag errorSceneFlag,
+                            @RequestHeader HttpHeaders headers) {
+        SecurityController.LOGGER.info("security-service param = " + JSON.toJSONString(errorSceneFlag));
+        return ok(securityService.check(errorSceneFlag, accountId, headers));
     }
 
 }

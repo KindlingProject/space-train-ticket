@@ -1,5 +1,6 @@
 package order.controller;
 
+import com.alibaba.fastjson.JSON;
 import edu.fudan.common.entity.Seat;
 import edu.fudan.common.util.StringUtils;
 import order.entity.*;
@@ -42,9 +43,26 @@ public class OrderController {
 
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/order")
-    public HttpEntity createNewOrder(@RequestBody Order createOrder, @RequestHeader HttpHeaders headers) {
-        OrderController.LOGGER.info("[createNewOrder][Create Order][from {} to {} at {}]", createOrder.getFrom(), createOrder.getTo(), createOrder.getTravelDate());
-        return ok(orderService.create(createOrder, headers));
+    public HttpEntity createNewOrder(@RequestBody OrderExt createOrder, @RequestHeader HttpHeaders headers) {
+        OrderController.LOGGER.info("[createNewOrder][Create Order][from {}]", JSON.toJSONString(createOrder));
+        Order order = new Order();
+        order.setId(createOrder.getId());
+        order.setBoughtDate(createOrder.getBoughtDate());
+        order.setTravelDate(createOrder.getTravelDate());
+        order.setTravelTime(createOrder.getTravelTime());
+        order.setAccountId(createOrder.getAccountId());
+        order.setContactsName(createOrder.getContactsName());
+        order.setDocumentType(createOrder.getDocumentType());
+        order.setContactsDocumentNumber(createOrder.getContactsDocumentNumber());
+        order.setTrainNumber(createOrder.getTrainNumber());
+        order.setCoachNumber(createOrder.getCoachNumber());
+        order.setSeatClass(createOrder.getSeatClass());
+        order.setSeatNumber(createOrder.getSeatNumber());
+        order.setFrom(createOrder.getFrom());
+        order.setTo(createOrder.getTo());
+        order.setStatus(createOrder.getStatus());
+        order.setPrice(createOrder.getPrice());
+        return ok(orderService.create(order, headers, createOrder.getErrorSceneFlag()));
     }
 
     @CrossOrigin(origins = "*")

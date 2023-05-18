@@ -1,5 +1,6 @@
 package train.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import edu.fudan.common.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class TrainController {
     @CrossOrigin(origins = "*")
     @PostMapping(value = "/trains")
     public HttpEntity create(@RequestBody TrainType trainType, @RequestHeader HttpHeaders headers) {
-        TrainController.LOGGER.info("[create][Create train][TrainTypeId: {}]",trainType.getId());
+        TrainController.LOGGER.info("[create][Create train][TrainTypeId: {}]", trainType.getId());
         boolean isCreateSuccess = trainService.create(trainType, headers);
         if (isCreateSuccess) {
             return ok(new Response(1, "create success", null));
@@ -45,7 +46,7 @@ public class TrainController {
     @CrossOrigin(origins = "*")
     @GetMapping(value = "/trains/{id}")
     public HttpEntity retrieve(@PathVariable String id, @RequestHeader HttpHeaders headers) {
-        TrainController.LOGGER.info("[retrieve][Retrieve train][TrainTypeId: {}]",id);
+        TrainController.LOGGER.info("[retrieve][Retrieve train][TrainTypeId: {}]", id);
         TrainType trainType = trainService.retrieve(id, headers);
         if (trainType == null) {
             return ok(new Response(0, "here is no TrainType with the trainType id: " + id, null));
@@ -55,16 +56,30 @@ public class TrainController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping(value = "/trains/byName/{name}")
-    public HttpEntity retrieveByName(@PathVariable String name, @RequestHeader HttpHeaders headers) {
+    @PostMapping(value = "/trains/byName/{name}")
+    public HttpEntity retrieveByName(@PathVariable String name,
+                                     @RequestBody ErrorSceneFlag errorSceneFlag,
+                                     @RequestHeader HttpHeaders headers) {
         TrainController.LOGGER.info("[retrieveByName][Retrieve train][TrainTypeName: {}]", name);
-        TrainType trainType = trainService.retrieveByName(name, headers);
+        TrainType trainType = trainService.retrieveByName(errorSceneFlag, name, headers);
         if (trainType == null) {
             return ok(new Response(0, "here is no TrainType with the trainType name: " + name, null));
         } else {
             return ok(new Response(1, "success", trainType));
         }
     }
+
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/trains/scene")
+    public HttpEntity retrieveScene(@RequestBody ErrorSceneFlag errorSceneFlag,
+                                    @RequestHeader HttpHeaders headers) {
+        String result = trainService.retrieveByName2(errorSceneFlag, headers);
+
+        return ok(new Response(1, "success", result));
+
+    }
+
 
     @CrossOrigin(origins = "*")
     @PostMapping(value = "/trains/byNames")
@@ -81,7 +96,7 @@ public class TrainController {
     @CrossOrigin(origins = "*")
     @PutMapping(value = "/trains")
     public HttpEntity update(@RequestBody TrainType trainType, @RequestHeader HttpHeaders headers) {
-        TrainController.LOGGER.info("[update][Update train][TrainTypeId: {}]",trainType.getId());
+        TrainController.LOGGER.info("[update][Update train][TrainTypeId: {}]", trainType.getId());
         boolean isUpdateSuccess = trainService.update(trainType, headers);
         if (isUpdateSuccess) {
             return ok(new Response(1, "update success", isUpdateSuccess));
@@ -93,7 +108,7 @@ public class TrainController {
     @CrossOrigin(origins = "*")
     @DeleteMapping(value = "/trains/{id}")
     public HttpEntity delete(@PathVariable String id, @RequestHeader HttpHeaders headers) {
-        TrainController.LOGGER.info("[delete][Delete train][TrainTypeId: {}]",id);
+        TrainController.LOGGER.info("[delete][Delete train][TrainTypeId: {}]", id);
         boolean isDeleteSuccess = trainService.delete(id, headers);
         if (isDeleteSuccess) {
             return ok(new Response(1, "delete success", isDeleteSuccess));

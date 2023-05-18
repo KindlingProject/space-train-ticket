@@ -1,5 +1,6 @@
 package seat.controller;
 
+import edu.fudan.common.entity.ErrorSceneFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,13 @@ public class SeatController {
         // int
         SeatController.LOGGER.info("[getLeftTicketOfInterval][Get left ticket of interval][TravelDate: {},TrainNumber: {},SeatType: {}]",seatRequest.getTravelDate(),seatRequest.getTrainNumber(),seatRequest.getSeatType());
         return ok(seatService.getLeftTicketOfInterval(seatRequest, headers));
+    }
+
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/seats/left_tickets2")
+    public HttpEntity getLeftTicketOfInterval2(@RequestBody ErrorSceneFlag errorSceneFlag, @RequestHeader HttpHeaders headers) {
+        return ok(seatService.getLeftTicketOfInterval2(errorSceneFlag, headers));
     }
 
 }
